@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(yes \"\")",
+      "Bash(npx create-agentic-app@latest .)",
+      "Bash(pnpm install *)",
+      "Bash(npm install *)",
+      "Bash(pnpm typecheck *)",
+      "Bash(pnpm lint *)",
+      "Bash(pnpm build *)",
+      "Bash(node scripts/generate-icons.mjs)",
+      "Bash(gh auth *)",
+      "Bash(gh --version)",
+      "Bash(git --version)",
+      "Bash(npm list *)",
+      "Bash(winget install *)",
+      "Bash(export PATH=\"$PATH:/c/Program Files/GitHub CLI\")",
+      "Bash(git reset *)",
+      "Bash(git rm *)",
+      "Bash(git add *)"
+    ]
+  }
+}

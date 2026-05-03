@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <!-- Background: navy-deep. Solid rect covers the entire 512x512 canvas so
+       the icon reads correctly with both `any` and `maskable` purpose. -->
+  <rect width="512" height="512" fill="#0A1628"/>
+
+  <!-- Shield silhouette: white, centred, ~60% of the canvas height (~310px).
+       Classic crest outline — straight shoulders tapering to a rounded
+       bottom point. -->
+  <path
+    d="M256 96
+       L376 136
+       L376 280
+       C376 348 322 396 256 416
+       C190 396 136 348 136 280
+       L136 136 Z"
+    fill="#FFFFFF"
+  />
+
+  <!-- Gold "S" wordmark inside the shield — bold, single character, optically
+       centred within the shield. Geist-ish geometric sans rendered via the
+       common system fallback so the SVG is self-contained. -->
+  <text
+    x="256"
+    y="296"
+    text-anchor="middle"
+    font-family="Helvetica, Arial, sans-serif"
+    font-weight="700"
+    font-size="180"
+    fill="#FCC419"
+  >S</text>
+</svg>

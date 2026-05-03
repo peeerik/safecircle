@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-navy-deep: #0A1628;
+  --color-navy: #0E1A2E;
+  --color-navy-light: #152238;
+  --color-navy-card: #1A2842;
+  --color-gold: #FCC419;
+  --color-gold-dim: #E67700;
+  --color-red-alert: #FF6B6B;
+  --color-red-dark: #E03131;
+  --color-green-safe: #51CF66;
+  --color-green-dim: #2B8A3E;
+
+  --color-background: var(--color-navy-deep);
+  --color-foreground: rgba(255,255,255,0.92);
+  --color-card: var(--color-navy-card);
+  --color-card-foreground: rgba(255,255,255,0.92);
+  --color-primary: var(--color-gold);
+  --color-primary-foreground: var(--color-navy-deep);
+  --color-secondary: var(--color-navy-light);
+  --color-secondary-foreground: rgba(255,255,255,0.92);
+  --color-destructive: var(--color-red-alert);
+  --color-muted: var(--color-navy-light);
+  --color-muted-foreground: rgba(255,255,255,0.6);
+  --color-border: rgba(255,255,255,0.08);
+  --color-input: rgba(255,255,255,0.08);
+  --color-ring: var(--color-gold);
+  --color-accent: var(--color-gold-dim);
+  --color-accent-foreground: var(--color-navy-deep);
+  --color-popover: var(--color-navy-card);
+  --color-popover-foreground: rgba(255,255,255,0.92);
+
+  --radius: 1rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+}
+
+:root {
+  --white-80: rgba(255,255,255,0.8);
+  --white-40: rgba(255,255,255,0.4);
+  --white-08: rgba(255,255,255,0.08);
+}
+
+@layer base {
+  * { @apply border-border; }
+  html, body {
+    background: var(--color-navy-deep);
+    color: var(--color-foreground);
+    font-feature-settings: "rlig" 1, "calt" 1, "tnum" 1;
+    overscroll-behavior: none;
+  }
+}
