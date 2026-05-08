@@ -18,13 +18,11 @@ import { copy } from "@/lib/copy";
 // home preview crops to a 280-tall viewBox so we squash the y axis to keep
 // every dot visible in the smaller card.
 const MAP_PREVIEW_HEIGHT = 280;
-const FULL_MAP_HEIGHT = 700;
+const FULL_MAP_HEIGHT = 600;
 const Y_SCALE = MAP_PREVIEW_HEIGHT / FULL_MAP_HEIGHT;
 
-// "You" sits roughly mid-canvas — centred horizontally, slightly above the
-// vertical midpoint so the dot doesn't collide with the bottom edge.
 const YOU_X = 195;
-const YOU_Y = 140;
+const YOU_Y = 120;
 
 export default function Home() {
   // Spec: render only the first 5 named neighbours on the home list. The data
