@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { MapPin, Users } from "lucide-react";
 import { AwayModeToggle } from "@/components/safecircle/buttons/AwayModeToggle";
-import { SOSButton } from "@/components/safecircle/buttons/SOSButton";
 import { NeighborCard } from "@/components/safecircle/cards/NeighborCard";
 import { neighbors } from "@/components/safecircle/data/neighbors";
 import {
@@ -124,14 +123,6 @@ export default function Home() {
               </motion.div>
             ))}
           </StaggerList>
-        </section>
-
-        {/* SOS section — extra padding so the button visually floats. */}
-        <section className="flex flex-col items-center gap-3 py-8">
-          <SOSButton />
-          <p className="text-sm text-[var(--white-40)]">
-            Trykk og hold i 2 sekunder
-          </p>
         </section>
       </div>
     </MobileShell>

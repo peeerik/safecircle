@@ -1,19 +1,33 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Target } from "lucide-react";
+import { ActionButton } from "@/components/safecircle/buttons/ActionButton";
 import { neighbors } from "@/components/safecircle/data/neighbors";
 import { FilterPills } from "@/components/safecircle/map/FilterPills";
 import { MapCanvas } from "@/components/safecircle/map/MapCanvas";
 import { NeighborDot } from "@/components/safecircle/map/NeighborDot";
 import { RadiusOverlay } from "@/components/safecircle/map/RadiusOverlay";
 import { MobileShell } from "@/components/safecircle/shell/MobileShell";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 type Filter = "alle" | "betrodde" | "online";
+
+const BURGLAR_X = 115;
+const BURGLAR_Y = 380;
 
 export default function MapPage() {
   const [filter, setFilter] = useState<Filter>("alle");
   const [selected, setSelected] = useState<(typeof neighbors)[0] | null>(null);
+  const [burglarOpen, setBurglarOpen] = useState<boolean>(false);
 
   // "betrodde" filters down to trusted neighbours only. "alle" and "online"
   // both show the full set in this demo (no online-state in mock data yet).
@@ -21,6 +35,13 @@ export default function MapPage() {
     filter === "betrodde"
       ? neighbors.filter((n) => n.badge === "betrodd")
       : neighbors;
+
+  // Opening the burglar alert dialog should also dismiss any open neighbour
+  // detail card so the two surfaces don't visually fight each other.
+  const openBurglar = () => {
+    setSelected(null);
+    setBurglarOpen(true);
+  };
 
   return (
     <MobileShell>
@@ -49,6 +70,65 @@ export default function MapPage() {
             y={300}
             color="var(--color-green-safe)"
             size={12}
+          />
+
+          {/* Burglar alert marker — rendered before neighbour dots so trusted
+              neighbours visually sit on top. Three staggered pulsing rings
+              radiate outward, with a static red dot at the center and an
+              oversized invisible hit-target for easier tapping. */}
+          <motion.circle
+            cx={BURGLAR_X}
+            cy={BURGLAR_Y}
+            fill="none"
+            stroke="#FF4444"
+            strokeWidth={1.5}
+            initial={{ r: 8, opacity: 0.6 }}
+            animate={{ r: 20, opacity: 0 }}
+            transition={{
+              duration: 1.8,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0,
+            }}
+          />
+          <motion.circle
+            cx={BURGLAR_X}
+            cy={BURGLAR_Y}
+            fill="none"
+            stroke="#FF4444"
+            strokeWidth={1.5}
+            initial={{ r: 8, opacity: 0.6 }}
+            animate={{ r: 20, opacity: 0 }}
+            transition={{
+              duration: 1.8,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.6,
+            }}
+          />
+          <motion.circle
+            cx={BURGLAR_X}
+            cy={BURGLAR_Y}
+            fill="none"
+            stroke="#FF4444"
+            strokeWidth={1.5}
+            initial={{ r: 8, opacity: 0.6 }}
+            animate={{ r: 20, opacity: 0 }}
+            transition={{
+              duration: 1.8,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 1.2,
+            }}
+          />
+          <circle cx={BURGLAR_X} cy={BURGLAR_Y} r={6} fill="#FF4444" />
+          <circle
+            cx={BURGLAR_X}
+            cy={BURGLAR_Y}
+            r={22}
+            fill="transparent"
+            style={{ cursor: "pointer" }}
+            onClick={openBurglar}
           />
 
           {/* Neighbour dots */}
@@ -114,6 +194,29 @@ export default function MapPage() {
           </div>
         )}
       </div>
+
+      <Dialog open={burglarOpen} onOpenChange={setBurglarOpen}>
+        <DialogContent className="bg-[var(--color-navy-card)] border border-white/10 text-white max-w-sm mx-4">
+          <DialogHeader>
+            <DialogTitle className="text-base font-bold text-white">
+              ⚠️ Pågående innbrudd – Storgata 1
+            </DialogTitle>
+          </DialogHeader>
+          <DialogDescription className="text-sm text-white/80 space-y-3">
+            <p>
+              Ta bilde av gjerningsmann og kjøretøy/regnr hvis mulig — fra
+              trygg avstand. Overlever bildet til politiet.
+            </p>
+            <p className="text-[var(--color-gold)] font-medium">
+              ❗ Ikke heng ut bilde av personen offentlig — dette kan være
+              ulovlig.
+            </p>
+          </DialogDescription>
+          <DialogClose asChild>
+            <ActionButton variant="secondary">Lukk</ActionButton>
+          </DialogClose>
+        </DialogContent>
+      </Dialog>
     </MobileShell>
   );
 }
