@@ -21,7 +21,31 @@ import {
 } from "@/components/ui/dialog";
 
 type Filter = "alle" | "betrodde" | "online";
-type Simulation = "burglary" | "fire";
+type Simulation = "calm" | "burglary" | "fire";
+
+function AlarmBanner({ simulation }: { simulation: "burglary" | "fire" }) {
+  const isBurglary = simulation === "burglary";
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: [0.85, 1, 0.85], y: 0 }}
+      transition={{
+        y: { duration: 0.3, ease: "easeOut" },
+        opacity: { duration: 2, repeat: Infinity, ease: "easeInOut", repeatType: "mirror" },
+      }}
+      className={`mx-5 mb-3 rounded-xl px-4 py-2.5 flex items-center gap-2 text-sm font-semibold text-white ${
+        isBurglary
+          ? "bg-[var(--color-red-dark)]"
+          : "bg-[#C05200]"
+      }`}
+    >
+      <span className="text-base">{isBurglary ? "🚨" : "🔥"}</span>
+      <span>
+        Aktiv alarm – {isBurglary ? "Innbrudd, Storgata 1" : "Brann, Parkveien 8"}
+      </span>
+    </motion.div>
+  );
+}
 
 const BURGLAR_X = 115;
 const BURGLAR_Y = 380;
@@ -34,7 +58,7 @@ export default function MapPage() {
   const [selected, setSelected] = useState<(typeof neighbors)[0] | null>(null);
   const [burglarOpen, setBurglarOpen] = useState<boolean>(false);
   const [fireOpen, setFireOpen] = useState<boolean>(false);
-  const [simulation, setSimulation] = useState<Simulation>("burglary");
+  const [simulation, setSimulation] = useState<Simulation>("calm");
 
   // "betrodde" filters down to trusted neighbours only. "alle" and "online"
   // both show the full set in this demo (no online-state in mock data yet).
@@ -70,6 +94,10 @@ export default function MapPage() {
         <FilterPills value={filter} onChange={setFilter} />
       </div>
 
+      {simulation !== "calm" && (
+        <AlarmBanner simulation={simulation} />
+      )}
+
       {/* Full map — takes remaining space */}
       <div className="flex-1 relative">
         {/* Simulation switcher — toggles between burglary and fire scenarios */}
@@ -77,11 +105,13 @@ export default function MapPage() {
           type="button"
           aria-label="Bytt simulering"
           onClick={() =>
-            setSimulation((s) => (s === "burglary" ? "fire" : "burglary"))
+            setSimulation((s) =>
+              s === "calm" ? "burglary" : s === "burglary" ? "fire" : "calm",
+            )
           }
           className="absolute top-3 right-3 z-10 flex size-9 items-center justify-center rounded-full bg-[var(--color-navy-card)]/90 backdrop-blur-md border border-white/10 text-base shadow-md transition-all active:scale-95 cursor-pointer"
         >
-          {simulation === "burglary" ? "🚨" : "🔥"}
+          {simulation === "calm" ? "✅" : simulation === "burglary" ? "🚨" : "🔥"}
         </button>
 
         <MapCanvas viewBox="0 0 390 600">
