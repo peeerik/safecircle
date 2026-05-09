@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Target } from "lucide-react";
 import { ActionButton } from "@/components/safecircle/buttons/ActionButton";
@@ -15,11 +16,9 @@ import {
   DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
 
 type Filter = "alle" | "betrodde" | "online";
 type Simulation = "burglary" | "fire";
@@ -30,15 +29,12 @@ const FIRE_X = 80;
 const FIRE_Y = 160; // Anne Lise H.'s position on Parkveien
 
 export default function MapPage() {
+  const router = useRouter();
   const [filter, setFilter] = useState<Filter>("alle");
   const [selected, setSelected] = useState<(typeof neighbors)[0] | null>(null);
   const [burglarOpen, setBurglarOpen] = useState<boolean>(false);
   const [fireOpen, setFireOpen] = useState<boolean>(false);
   const [simulation, setSimulation] = useState<Simulation>("burglary");
-  const [messageTarget, setMessageTarget] = useState<
-    (typeof neighbors)[0] | null
-  >(null);
-  const [messageText, setMessageText] = useState<string>("");
 
   // "betrodde" filters down to trusted neighbours only. "alle" and "online"
   // both show the full set in this demo (no online-state in mock data yet).
@@ -252,64 +248,6 @@ export default function MapPage() {
               {/* Static fire origin dot */}
               <circle cx={FIRE_X} cy={FIRE_Y} r={6} fill="#FF7800" />
 
-              {/* Animated smoke/wind path — east along Parkveien (y=160) */}
-              <path
-                d="M 80 160 L 195 160 L 310 160"
-                fill="none"
-                stroke="#FF7800"
-                strokeWidth="2.5"
-                strokeDasharray="8 5"
-                opacity="0.75"
-              >
-                <animate
-                  attributeName="stroke-dashoffset"
-                  from="0"
-                  to="-26"
-                  dur="2s"
-                  repeatCount="indefinite"
-                />
-              </path>
-
-              {/* Warning house icons along the smoke path */}
-              {[
-                { cx: 145, cy: 160 },
-                { cx: 255, cy: 160 },
-              ].map(({ cx, cy }) => (
-                <motion.g
-                  key={`warn-${cx}-${cy}`}
-                  animate={{ opacity: [0.55, 0.95, 0.55] }}
-                  transition={{
-                    duration: 2.2,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                >
-                  {/* House body */}
-                  <rect
-                    x={cx - 5}
-                    y={cy + 2}
-                    width="10"
-                    height="8"
-                    rx="1"
-                    fill="#FF7800"
-                  />
-                  {/* Roof */}
-                  <polygon
-                    points={`${cx - 7},${cy + 2} ${cx + 7},${cy + 2} ${cx},${cy - 5}`}
-                    fill="#FF7800"
-                  />
-                  {/* Door */}
-                  <rect
-                    x={cx - 2}
-                    y={cy + 5}
-                    width="4"
-                    height="5"
-                    rx="1"
-                    fill="#182538"
-                  />
-                </motion.g>
-              ))}
-
               {/* Fire hit-target */}
               <circle
                 cx={FIRE_X}
@@ -385,30 +323,16 @@ export default function MapPage() {
             <div className="mt-3">
               <ActionButton
                 variant="secondary"
-                onClick={() => setMessageTarget(selected)}
+                onClick={() => {
+                  setSelected(null);
+                  router.push(`/chat/${selected.id}`);
+                }}
               >
                 ✉️ Send melding
               </ActionButton>
             </div>
           </div>
         )}
-      </div>
-
-      {/* Legend */}
-      <div className="px-4 py-3">
-        <div className="rounded-xl bg-[var(--color-navy-card)]/80 border border-white/5 px-3 py-2 flex items-start gap-2">
-          {simulation === "burglary" ? (
-            <span className="text-[10px] leading-relaxed text-white/50">
-              <span className="text-[#FF4444] font-medium">——</span>{" "}
-              Mulig rømningsrute – vurder å sikre bilder fra trygg avstand. 📷 = viktige observasjonspunkter
-            </span>
-          ) : (
-            <span className="text-[10px] leading-relaxed text-white/50">
-              <span className="text-[#FF7800] font-medium">——</span>{" "}
-              Mulig spredningsretning – naboer i sonen bør være ekstra oppmerksomme. 🏠 = hus i faresonen
-            </span>
-          )}
-        </div>
       </div>
 
       <Dialog open={burglarOpen} onOpenChange={setBurglarOpen}>
@@ -442,10 +366,8 @@ export default function MapPage() {
             </DialogTitle>
           </DialogHeader>
           <DialogDescription className="text-sm text-white/80 space-y-3">
-            <p>
-              Ring 110 umiddelbart hvis ikke allerede varslet. Hold trygg avstand.
-              Hjelp naboer med evakuering hvis mulig – sjekk spesielt eldre, barn og kjæledyr.
-            </p>
+            <p>Hund hjemme alene. Hvis trygt: prøv å slipp den ut og redd et liv.</p>
+            <p>Ring 110 hvis ikke allerede varslet.</p>
             <p className="text-[var(--color-red-alert)] font-medium">
               ❗ Ikke gå inn i bygningen.
             </p>
@@ -453,48 +375,6 @@ export default function MapPage() {
           <DialogClose asChild>
             <ActionButton variant="secondary">Lukk</ActionButton>
           </DialogClose>
-        </DialogContent>
-      </Dialog>
-
-      {/* Send-melding dialog */}
-      <Dialog
-        open={messageTarget !== null}
-        onOpenChange={(open) => {
-          if (!open) {
-            setMessageTarget(null);
-            setMessageText("");
-          }
-        }}
-      >
-        <DialogContent className="bg-[var(--color-navy-card)] border border-white/10 text-white max-w-sm mx-4">
-          <DialogHeader>
-            <DialogTitle className="text-base font-bold text-white">
-              Melding til {messageTarget?.name}
-            </DialogTitle>
-            <DialogDescription className="text-sm text-white/60">
-              {messageTarget?.address}
-            </DialogDescription>
-          </DialogHeader>
-          <Textarea
-            value={messageText}
-            onChange={(e) => setMessageText(e.target.value)}
-            placeholder="Skriv en melding…"
-            className="min-h-[100px] bg-white/5 border-white/10 text-white placeholder:text-white/30 resize-none"
-          />
-          <DialogFooter className="flex gap-2">
-            <DialogClose asChild>
-              <ActionButton variant="secondary">Avbryt</ActionButton>
-            </DialogClose>
-            <ActionButton
-              variant="primary"
-              onClick={() => {
-                setMessageTarget(null);
-                setMessageText("");
-              }}
-            >
-              Send
-            </ActionButton>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
     </MobileShell>

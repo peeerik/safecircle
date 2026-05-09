@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Map as MapIcon, User } from "lucide-react";
+import { Home, Map as MapIcon, MessageCircle, User } from "lucide-react";
 import { SOSButton } from "@/components/safecircle/buttons/SOSButton";
 import { copy } from "@/lib/copy";
 import { cn } from "@/lib/utils";
@@ -19,6 +19,7 @@ const LEFT: NavItem[] = [
 ];
 
 const RIGHT: NavItem[] = [
+  { href: "/chat", icon: MessageCircle, label: "Chat" },
   { href: "/profile", icon: User, label: copy.nav.profile },
 ];
 
