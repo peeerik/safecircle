@@ -225,6 +225,28 @@ export default function MapPage() {
           {/* Fire simulation layer */}
           {simulation === "fire" && (
             <>
+              {/* Soft outer glow — large, low-opacity pulse that radiates
+                  from beneath the neighbour dot. */}
+              <circle
+                cx={FIRE_X}
+                cy={FIRE_Y}
+                r={12}
+                fill="#FF7800"
+                opacity={0.25}
+              />
+              <motion.circle
+                cx={FIRE_X}
+                cy={FIRE_Y}
+                r={18}
+                fill="#FF7800"
+                animate={{ opacity: [0.15, 0.35, 0.15] }}
+                transition={{
+                  duration: 1.2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
+
               {/* Orange pulsing aura — three staggered rings */}
               {[0, 0.6, 1.2].map((delay) => (
                 <motion.circle
@@ -235,7 +257,7 @@ export default function MapPage() {
                   stroke="#FF7800"
                   strokeWidth={1.5}
                   initial={{ r: 8, opacity: 0.6 }}
-                  animate={{ r: 20, opacity: 0 }}
+                  animate={{ r: 22, opacity: 0 }}
                   transition={{
                     duration: 1.8,
                     repeat: Infinity,
@@ -245,8 +267,32 @@ export default function MapPage() {
                 />
               ))}
 
-              {/* Static fire origin dot */}
-              <circle cx={FIRE_X} cy={FIRE_Y} r={6} fill="#FF7800" />
+              {/* Static fire origin dot — sits at Anne Lise H.'s position */}
+              <circle cx={FIRE_X} cy={FIRE_Y} r={7} fill="#FF7800" />
+
+              {/* Flame emoji sparks rising upward, staggered */}
+              {[
+                { dx: -6, delay: 0 },
+                { dx: 0, delay: 0.45 },
+                { dx: 6, delay: 0.9 },
+              ].map(({ dx, delay }) => (
+                <motion.text
+                  key={`flame-${dx}`}
+                  x={FIRE_X + dx}
+                  fontSize="9"
+                  textAnchor="middle"
+                  initial={{ y: FIRE_Y - 10, opacity: 1 }}
+                  animate={{ y: FIRE_Y - 30, opacity: 0 }}
+                  transition={{
+                    duration: 1.4,
+                    repeat: Infinity,
+                    ease: "easeOut",
+                    delay,
+                  }}
+                >
+                  🔥
+                </motion.text>
+              ))}
 
               {/* Fire hit-target */}
               <circle
