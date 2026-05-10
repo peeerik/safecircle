@@ -1,8 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { MapPin, Users } from "lucide-react";
-import { AwayModeToggle } from "@/components/safecircle/buttons/AwayModeToggle";
 import { NeighborCard } from "@/components/safecircle/cards/NeighborCard";
 import { neighbors } from "@/components/safecircle/data/neighbors";
 import {
@@ -23,6 +23,11 @@ const Y_SCALE = MAP_PREVIEW_HEIGHT / FULL_MAP_HEIGHT;
 
 const YOU_X = 195;
 const YOU_Y = 120;
+
+const NEWS_ITEMS = [
+  { id: "politiet", tag: "🚔", title: "Mistenkelige forhold ved Universitetet i Innlandet", timestamp: "2t siden" },
+  { id: "asted", tag: "📺", title: "Etterlysning – grovt tyveri hos Thune Gullsmed, Jessheim", timestamp: "1d siden" },
+];
 
 export default function Home() {
   // Spec: render only the first 5 named neighbours on the home list. The data
@@ -81,22 +86,23 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Borte-modus card */}
-        <section className="rounded-2xl bg-[var(--color-navy-card)] p-4">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl" aria-hidden="true">
-              🏖
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-white">
-                {copy.home.awayMode}
-              </p>
-              <p className="text-xs text-[var(--white-80)]">
-                {copy.home.awayModeDescription}
-              </p>
-            </div>
-            <AwayModeToggle />
+        {/* Nyhetssenter */}
+        <section className="rounded-2xl bg-[var(--color-navy-card)] overflow-hidden">
+          <div className="flex items-center justify-between px-4 pt-4 pb-2">
+            <h2 className="text-sm font-semibold text-white">Nyhetssenter</h2>
+            <Link href="/news" className="text-xs text-[var(--color-gold)]">Se alle</Link>
           </div>
+          <ul className="divide-y divide-white/5">
+            {NEWS_ITEMS.map((item) => (
+              <li key={item.id}>
+                <Link href="/news" className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors">
+                  <span className="text-sm">{item.tag}</span>
+                  <span className="flex-1 text-sm text-white truncate">{item.title}</span>
+                  <span className="text-xs text-[var(--white-40)] shrink-0">{item.timestamp}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </section>
 
         {/* Neighbours list */}

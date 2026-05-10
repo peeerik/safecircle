@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Bell, ChevronRight, LogOut, PawPrint, Shield } from "lucide-react";
+import { AwayModeToggle } from "@/components/safecircle/buttons/AwayModeToggle";
 import { MobileShell } from "@/components/safecircle/shell/MobileShell";
 
 /**
@@ -48,6 +49,34 @@ export default function ProfilePage() {
             >
               Betrodd
             </span>
+          </div>
+        </section>
+
+        {/* Bortemodus */}
+        <section
+          className="rounded-2xl bg-[var(--color-navy-card)] p-4"
+          style={{ border: "1px solid var(--color-border)" }}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className="flex size-10 items-center justify-center rounded-xl"
+              style={{
+                backgroundColor:
+                  "color-mix(in oklab, var(--color-gold) 15%, transparent)",
+              }}
+              aria-hidden="true"
+            >
+              <span className="text-xl">🏖</span>
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold leading-none text-white">
+                Bortemodus
+              </p>
+              <p className="mt-1 text-xs text-[var(--white-80)]">
+                Naboer ser at du er borte
+              </p>
+            </div>
+            <AwayModeToggle />
           </div>
         </section>
 
