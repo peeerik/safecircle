@@ -68,14 +68,13 @@ export default function NewsPage() {
           >
             {/* Åsted Norge etterlysning-bilde */}
             {item.hasImage && (
-              <div className="w-full border-b border-white/5 overflow-hidden">
+              <div className="w-full border-b border-white/5 overflow-hidden bg-[var(--color-navy-light)]">
                 <Image
                   src="/news/etterlysning.jpg"
                   alt="Etterlysning – to menn mistenkt for tyveri hos Thune Gullsmed"
                   width={390}
-                  height={200}
-                  className="w-full object-cover"
-                  style={{ maxHeight: "200px" }}
+                  height={440}
+                  className="w-full object-contain"
                 />
               </div>
             )}
