@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
+import Image from "next/image";
 import { MobileShell } from "@/components/safecircle/shell/MobileShell";
 
 type NewsItem = {
@@ -65,11 +66,17 @@ export default function NewsPage() {
             className="rounded-2xl bg-[var(--color-navy-card)] overflow-hidden border border-white/5 cursor-pointer hover:border-white/10 transition-colors"
             onClick={() => setSelected(item)}
           >
-            {/* Image placeholder for Åsted Norge */}
+            {/* Åsted Norge etterlysning-bilde */}
             {item.hasImage && (
-              <div className="w-full h-36 bg-[var(--color-navy-light)] flex items-center justify-center border-b border-white/5">
-                <span className="text-4xl opacity-40">📺</span>
-                {/* Replace with: <Image src="/news/etterlysning.jpg" alt="Etterlysning" width={390} height={144} className="w-full h-36 object-cover" /> */}
+              <div className="w-full border-b border-white/5 overflow-hidden">
+                <Image
+                  src="/news/etterlysning.jpg"
+                  alt="Etterlysning – to menn mistenkt for tyveri hos Thune Gullsmed"
+                  width={390}
+                  height={200}
+                  className="w-full object-cover"
+                  style={{ maxHeight: "200px" }}
+                />
               </div>
             )}
             <div className="p-4 space-y-2">
