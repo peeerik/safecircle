@@ -25,7 +25,7 @@ type MobileShellProps = {
 export function MobileShell({
   children,
   showNav = true,
-  showStatusBar = true,
+  showStatusBar = false,
   className,
 }: MobileShellProps) {
   const inner = (

@@ -127,27 +127,62 @@ export default function ProfilePage() {
           </h2>
           <ul className="mt-2">
             {[
-              { icon: Bell, label: "Varsler" },
-              { icon: Shield, label: "Personvern" },
-              { icon: LogOut, label: "Logg ut" },
-            ].map(({ icon: Icon, label }) => (
+              {
+                icon: Bell,
+                label: "Varsler",
+                href: "/settings/notifications" as string | undefined,
+              },
+              {
+                icon: Shield,
+                label: "Personvern",
+                href: undefined as string | undefined,
+              },
+              {
+                icon: LogOut,
+                label: "Logg ut",
+                href: undefined as string | undefined,
+              },
+            ].map(({ icon: Icon, label, href }) => (
               <li
                 key={label}
-                className="flex items-center justify-between border-b border-white/5 py-3 last:border-0"
+                className="border-b border-white/5 last:border-0"
               >
-                <div className="flex items-center gap-3">
-                  <Icon
-                    className="h-5 w-5 text-[var(--white-80)]"
-                    aria-hidden="true"
-                  />
-                  <span className="text-sm font-medium text-white">
-                    {label}
-                  </span>
-                </div>
-                <ChevronRight
-                  className="h-5 w-5 text-[var(--white-40)]"
-                  aria-hidden="true"
-                />
+                {href ? (
+                  <Link
+                    href={href}
+                    className="flex items-center justify-between py-3 hover:opacity-80 transition-opacity"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon
+                        className="h-5 w-5 text-[var(--white-80)]"
+                        aria-hidden="true"
+                      />
+                      <span className="text-sm font-medium text-white">
+                        {label}
+                      </span>
+                    </div>
+                    <ChevronRight
+                      className="h-5 w-5 text-[var(--white-40)]"
+                      aria-hidden="true"
+                    />
+                  </Link>
+                ) : (
+                  <div className="flex items-center justify-between py-3">
+                    <div className="flex items-center gap-3">
+                      <Icon
+                        className="h-5 w-5 text-[var(--white-80)]"
+                        aria-hidden="true"
+                      />
+                      <span className="text-sm font-medium text-white">
+                        {label}
+                      </span>
+                    </div>
+                    <ChevronRight
+                      className="h-5 w-5 text-[var(--white-40)]"
+                      aria-hidden="true"
+                    />
+                  </div>
+                )}
               </li>
             ))}
           </ul>

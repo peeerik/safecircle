@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { MapPin, Users } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronDown, MapPin, Users } from "lucide-react";
 import { NeighborCard } from "@/components/safecircle/cards/NeighborCard";
 import { neighbors } from "@/components/safecircle/data/neighbors";
 import {
@@ -34,6 +35,7 @@ export default function Home() {
   // file already orders them — Anne Lise H., Kristoffer M., Sara B., Thomas K.,
   // Ingrid F. — so a simple slice is enough.
   const featuredNeighbors = neighbors.slice(0, 5);
+  const [neighborsOpen, setNeighborsOpen] = useState(false);
 
   return (
     <MobileShell>
@@ -107,26 +109,54 @@ export default function Home() {
 
         {/* Neighbours list */}
         <section className="space-y-3">
-          <h2 className="flex items-center gap-2 text-lg font-semibold text-white">
-            <MapPin
-              className="h-4 w-4 text-[var(--color-gold)]"
+          <button
+            type="button"
+            onClick={() => setNeighborsOpen((o) => !o)}
+            className="flex w-full items-center justify-between"
+          >
+            <h2 className="flex items-center gap-2 text-lg font-semibold text-white">
+              <MapPin
+                className="h-4 w-4 text-[var(--color-gold)]"
+                aria-hidden="true"
+              />
+              {copy.home.neighborsHeading}
+              <span className="text-sm font-normal text-[var(--white-40)]">
+                ({featuredNeighbors.length})
+              </span>
+            </h2>
+            <ChevronDown
+              className={`h-4 w-4 text-[var(--white-40)] transition-transform duration-300 ${
+                neighborsOpen ? "rotate-180" : ""
+              }`}
               aria-hidden="true"
             />
-            {copy.home.neighborsHeading}
-          </h2>
+          </button>
 
-          <StaggerList className="space-y-2">
-            {featuredNeighbors.map((n) => (
-              <motion.div key={n.id} variants={staggerItemVariants}>
-                <NeighborCard
-                  name={n.name}
-                  address={n.address}
-                  distance={n.distance}
-                  badge={n.badge}
-                />
+          <AnimatePresence initial={false}>
+            {neighborsOpen && (
+              <motion.div
+                key="neighbors"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                style={{ overflow: "hidden" }}
+              >
+                <StaggerList className="space-y-2">
+                  {featuredNeighbors.map((n) => (
+                    <motion.div key={n.id} variants={staggerItemVariants}>
+                      <NeighborCard
+                        name={n.name}
+                        address={n.address}
+                        distance={n.distance}
+                        badge={n.badge}
+                      />
+                    </motion.div>
+                  ))}
+                </StaggerList>
               </motion.div>
-            ))}
-          </StaggerList>
+            )}
+          </AnimatePresence>
         </section>
       </div>
     </MobileShell>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Target } from "lucide-react";
@@ -59,6 +59,17 @@ export default function MapPage() {
   const [burglarOpen, setBurglarOpen] = useState<boolean>(false);
   const [fireOpen, setFireOpen] = useState<boolean>(false);
   const [simulation, setSimulation] = useState<Simulation>("calm");
+  // SVG viewBox panning state. Panning shifts the viewBox origin so that
+  // every element inside the SVG (dots, overlays, alarms) moves together
+  // without needing a CSS transform on the wrapper.
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const dragRef = useRef<{
+    startX: number;
+    startY: number;
+    panX: number;
+    panY: number;
+  } | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   // "betrodde" filters down to trusted neighbours only. "alle" and "online"
   // both show the full set in this demo (no online-state in mock data yet).
@@ -99,7 +110,57 @@ export default function MapPage() {
       )}
 
       {/* Full map — takes remaining space */}
-      <div className="flex-1 relative">
+      <div
+        className="flex-1 relative"
+        style={{
+          cursor: isDragging ? "grabbing" : "grab",
+          touchAction: "none",
+        }}
+        onPointerDown={(e) => {
+          // Don't initiate panning when the user is interacting with
+          // overlay UI (simulation switcher, detail card buttons). Those
+          // sit on top of the wrapper with their own pointer handlers.
+          e.currentTarget.setPointerCapture(e.pointerId);
+          dragRef.current = {
+            startX: e.clientX,
+            startY: e.clientY,
+            panX: pan.x,
+            panY: pan.y,
+          };
+        }}
+        onPointerMove={(e) => {
+          if (!dragRef.current) return;
+          const dx = e.clientX - dragRef.current.startX;
+          const dy = e.clientY - dragRef.current.startY;
+          // Promote to dragging state after a small threshold so a quick
+          // tap still feels like a tap (cursor doesn't flicker).
+          if (!isDragging && Math.abs(dx) + Math.abs(dy) > 3) {
+            setIsDragging(true);
+          }
+          // Convert pixel deltas to SVG user-space units using the actual
+          // rendered size of the container.
+          const rect = e.currentTarget.getBoundingClientRect();
+          const scaleX = 390 / (rect.width || 390);
+          const scaleY = 600 / (rect.height || 600);
+          const newX = Math.max(
+            -120,
+            Math.min(120, dragRef.current.panX - dx * scaleX),
+          );
+          const newY = Math.max(
+            -150,
+            Math.min(150, dragRef.current.panY - dy * scaleY),
+          );
+          setPan({ x: newX, y: newY });
+        }}
+        onPointerUp={() => {
+          dragRef.current = null;
+          setIsDragging(false);
+        }}
+        onPointerCancel={() => {
+          dragRef.current = null;
+          setIsDragging(false);
+        }}
+      >
         {/* Simulation switcher — toggles between burglary and fire scenarios */}
         <button
           type="button"
@@ -114,7 +175,7 @@ export default function MapPage() {
           {simulation === "calm" ? "✅" : simulation === "burglary" ? "🚨" : "🔥"}
         </button>
 
-        <MapCanvas viewBox="0 0 390 600">
+        <MapCanvas viewBox={`${pan.x} ${pan.y} 390 600`}>
           {/* 500m radius around user */}
           <RadiusOverlay cx={195} cy={300} r={140} />
 
