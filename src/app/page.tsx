@@ -25,6 +25,33 @@ const Y_SCALE = MAP_PREVIEW_HEIGHT / FULL_MAP_HEIGHT;
 const YOU_X = 195;
 const YOU_Y = 120;
 
+/**
+ * Small house glyph rendered just below each neighbour dot. Kept tiny
+ * (≈5 SVG units tall) so it supplements the dot rather than dominating
+ * the preview.
+ */
+function MapHouse({
+  x,
+  y,
+  color = "rgba(255, 200, 0, 0.75)",
+}: {
+  x: number;
+  y: number;
+  color?: string;
+}) {
+  return (
+    <g transform={`translate(${x}, ${y})`} aria-hidden="true">
+      {/* Pitched roof + body in a single shape */}
+      <path
+        d="M -2.5 -1 L 0 -3 L 2.5 -1 L 2.5 2 L -2.5 2 Z"
+        fill={color}
+        stroke="rgba(0, 0, 0, 0.25)"
+        strokeWidth="0.3"
+      />
+    </g>
+  );
+}
+
 const NEWS_ITEMS = [
   { id: "politiet", tag: "🚔", title: "Mistenkelige forhold ved Universitetet i Innlandet", timestamp: "2t siden" },
   { id: "asted", tag: "📺", title: "Etterlysning – grovt tyveri hos Thune Gullsmed, Jessheim", timestamp: "1d siden" },
@@ -52,16 +79,24 @@ export default function Home() {
         <section className="overflow-hidden rounded-2xl bg-[var(--color-navy-card)]">
           <div className="relative aspect-[390/280] w-full">
             <MapCanvas viewBox="0 0 390 280" className="absolute inset-0">
-              {/* Plot 14 neighbours — scaled into the cropped viewBox. */}
-              {neighbors.map((n, i) => (
-                <NeighborDot
-                  key={n.id}
-                  x={n.x}
-                  y={n.y * Y_SCALE}
-                  delay={i * 0.12}
-                  size={5}
-                />
-              ))}
+              {/* Plot 14 neighbours — scaled into the cropped viewBox.
+                  Each gold dot gets a small house glyph just below it so
+                  the preview reads as "houses along the streets" rather
+                  than abstract dots in empty space. */}
+              {neighbors.map((n, i) => {
+                const y = n.y * Y_SCALE;
+                return (
+                  <g key={n.id}>
+                    <NeighborDot
+                      x={n.x}
+                      y={y}
+                      delay={i * 0.12}
+                      size={5}
+                    />
+                    <MapHouse x={n.x} y={y + 9} />
+                  </g>
+                );
+              })}
 
               {/* "You" dot — green, centred, slightly larger than neighbours. */}
               <NeighborDot
