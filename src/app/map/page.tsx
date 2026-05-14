@@ -58,6 +58,7 @@ export default function MapPage() {
   const [selected, setSelected] = useState<(typeof neighbors)[0] | null>(null);
   const [burglarOpen, setBurglarOpen] = useState<boolean>(false);
   const [fireOpen, setFireOpen] = useState<boolean>(false);
+  const [cameraOpen, setCameraOpen] = useState(false);
   const [simulation, setSimulation] = useState<Simulation>("calm");
   // SVG viewBox panning state. Panning shifts the viewBox origin so that
   // every element inside the SVG (dots, overlays, alarms) moves together
@@ -202,7 +203,7 @@ export default function MapPage() {
                 stroke="#FF4444"
                 strokeWidth={1.5}
                 initial={{ r: 8, opacity: 0.6 }}
-                animate={{ r: 20, opacity: 0 }}
+                animate={{ r: 45, opacity: 0 }}
                 transition={{
                   duration: 1.8,
                   repeat: Infinity,
@@ -217,7 +218,7 @@ export default function MapPage() {
                 stroke="#FF4444"
                 strokeWidth={1.5}
                 initial={{ r: 8, opacity: 0.6 }}
-                animate={{ r: 20, opacity: 0 }}
+                animate={{ r: 45, opacity: 0 }}
                 transition={{
                   duration: 1.8,
                   repeat: Infinity,
@@ -232,7 +233,7 @@ export default function MapPage() {
                 stroke="#FF4444"
                 strokeWidth={1.5}
                 initial={{ r: 8, opacity: 0.6 }}
-                animate={{ r: 20, opacity: 0 }}
+                animate={{ r: 45, opacity: 0 }}
                 transition={{
                   duration: 1.8,
                   repeat: Infinity,
@@ -321,14 +322,14 @@ export default function MapPage() {
               <circle
                 cx={FIRE_X}
                 cy={FIRE_Y}
-                r={12}
+                r={18}
                 fill="#FF7800"
                 opacity={0.25}
               />
               <motion.circle
                 cx={FIRE_X}
                 cy={FIRE_Y}
-                r={18}
+                r={28}
                 fill="#FF7800"
                 animate={{ opacity: [0.15, 0.35, 0.15] }}
                 transition={{
@@ -348,7 +349,7 @@ export default function MapPage() {
                   stroke="#FF7800"
                   strokeWidth={1.5}
                   initial={{ r: 8, opacity: 0.6 }}
-                  animate={{ r: 22, opacity: 0 }}
+                  animate={{ r: 45, opacity: 0 }}
                   transition={{
                     duration: 1.8,
                     repeat: Infinity,
@@ -396,6 +397,24 @@ export default function MapPage() {
               />
             </>
           )}
+
+          {/* Camera icons on neighbours during burglary — tap for evidence tips */}
+          {simulation === "burglary" &&
+            visible.map((n) => (
+              <text
+                key={`cam-${n.id}`}
+                x={n.x + 10}
+                y={n.y - 8}
+                fontSize="10"
+                style={{ cursor: "pointer", userSelect: "none" }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCameraOpen(true);
+                }}
+              >
+                📷
+              </text>
+            ))}
 
           {/* Neighbour dots */}
           {visible.map((n, i) => (
@@ -511,6 +530,22 @@ export default function MapPage() {
           </DialogDescription>
           <DialogClose asChild>
             <ActionButton variant="secondary">Lukk</ActionButton>
+          </DialogClose>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={cameraOpen} onOpenChange={setCameraOpen}>
+        <DialogContent className="bg-[var(--color-navy-card)] border border-white/10 text-white max-w-sm mx-4">
+          <DialogHeader>
+            <DialogTitle className="text-base font-bold text-white">
+              📷 Sikre bevis
+            </DialogTitle>
+          </DialogHeader>
+          <DialogDescription className="text-sm text-white/80 leading-relaxed">
+            Ta bilde/video, eller finn opptak fra overvåkningskameraer eller biler. Lagre dette, og kontakt politiet hvis du sitter på noe verdifullt.
+          </DialogDescription>
+          <DialogClose asChild>
+            <ActionButton variant="secondary">OK</ActionButton>
           </DialogClose>
         </DialogContent>
       </Dialog>

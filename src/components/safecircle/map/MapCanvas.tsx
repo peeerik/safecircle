@@ -18,21 +18,6 @@ export function MapCanvas({ children, viewBox = "0 0 390 600", className }: MapC
       {/* Base — slightly lighter than --color-navy for better contrast */}
       <rect x="-200" y="-200" width="790" height="1200" fill="#182538" />
 
-      {/* Parks */}
-      <path d="M20 40 Q80 0 160 50 Q200 100 160 160 Q110 190 50 160 Q0 130 20 40 Z"
-        fill="#2B8A3E" opacity="0.22" />
-      <path d="M260 400 Q330 385 355 450 Q360 500 320 520 Q270 530 255 480 Q245 445 260 400 Z"
-        fill="#2B8A3E" opacity="0.22" />
-      {/* New park blob in northwest */}
-      <path d="M-80 -120 Q-30 -180 40 -130 Q60 -80 20 -40 Q-30 -20 -70 -70 Z"
-        fill="#2B8A3E" opacity="0.22" />
-
-      {/* Water (bottom-left) */}
-      <path d="M0 550 Q70 535 130 558 Q90 600 0 600 Z" fill="#1e3a5f" opacity="0.8" />
-      {/* New water feature southeast */}
-      <path d="M390 620 Q440 600 490 640 Q500 690 450 710 Q400 720 380 680 Z"
-        fill="#1e3a5f" opacity="0.6" />
-
       {/* Secondary streets — Parkveien (y=160) */}
       <line x1="0" y1="160" x2="390" y2="160" stroke="rgba(255,255,255,0.14)" strokeWidth="2.5" strokeLinecap="round" />
       {/* Secondary streets — Brugata (y=490) */}
