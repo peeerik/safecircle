@@ -243,65 +243,6 @@ export default function MapPage() {
               />
               <circle cx={BURGLAR_X} cy={BURGLAR_Y} r={6} fill="#FF4444" />
 
-              {/* Animated escape route — east along Storgata, then north along
-                  the main vertical street. Native SVG <animate> avoids extra
-                  CSS. */}
-              <path
-                d="M 115 380 L 195 380 L 195 80"
-                fill="none"
-                stroke="#FF4444"
-                strokeWidth="2.5"
-                strokeDasharray="8 5"
-                opacity="0.85"
-              >
-                <animate
-                  attributeName="stroke-dashoffset"
-                  from="0"
-                  to="-26"
-                  dur="2s"
-                  repeatCount="indefinite"
-                />
-              </path>
-
-              {/* Camera observation points along the escape route */}
-              {[
-                { cx: 165, cy: 380 },
-                { cx: 195, cy: 295 },
-                { cx: 195, cy: 180 },
-              ].map(({ cx, cy }) => (
-                <motion.g
-                  key={`cam-${cx}-${cy}`}
-                  animate={{ opacity: [0.7, 1, 0.7] }}
-                  transition={{
-                    duration: 2.5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                >
-                  {/* Camera body */}
-                  <rect
-                    x={cx - 7}
-                    y={cy - 5}
-                    width="14"
-                    height="10"
-                    rx="2"
-                    fill="white"
-                    opacity="0.9"
-                  />
-                  {/* Lens */}
-                  <circle cx={cx} cy={cy} r="3.5" fill="#182538" />
-                  {/* Viewfinder bump */}
-                  <rect
-                    x={cx - 2}
-                    y={cy - 8}
-                    width="4"
-                    height="3"
-                    rx="1"
-                    fill="white"
-                    opacity="0.9"
-                  />
-                </motion.g>
-              ))}
 
               <circle
                 cx={BURGLAR_X}
