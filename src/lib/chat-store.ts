@@ -31,6 +31,30 @@ const SEED: Record<string, ChatMessage[]> = {
   "nabo-brugata": [
     { id: "s1", from: "neighbor", text: "Hei nabo! 👋 Ny her i gata.", time: "10:20" },
   ],
+  "magnus-h": [
+    { id: "s1", from: "neighbor", text: "Hei! Bare for å si ifra – det var en fremmed bil parkert utenfor huset mitt i natt.", time: "07:15" },
+  ],
+  "kari-n": [
+    { id: "s1", from: "neighbor", text: "God dag! Bare å si ifra hvis du trenger hjelp med noe 😊", time: "12:00" },
+    { id: "s2", from: "neighbor", text: "Jeg passer på katten min hjemme hele dagen.", time: "12:02" },
+  ],
+  "ole-b": [
+    { id: "s1", from: "neighbor", text: "Har du sett naboavisen? Det er møte om fartsdumper på Lillegata neste uke.", time: "09:30" },
+  ],
+  "mette-r": [
+    { id: "s1", from: "neighbor", text: "Hei! Jeg er ny i gata. Hyggelig å bli med i SafeCircle 👋", time: "16:45" },
+    { id: "s2", from: "neighbor", text: "Har dere noen anbefaling på god pizzarestaurant i nærheten?", time: "16:47" },
+  ],
+  "lars-e": [
+    { id: "s1", from: "neighbor", text: "Sjekk ut utsikten her nede! Havna er vakker om morgenen 🌅", time: "06:55" },
+  ],
+  "hanne-s": [
+    { id: "s1", from: "neighbor", text: "Hei fra Åsveien! Holder øye med innkjørselen vår.", time: "15:10" },
+  ],
+  "petter-v": [
+    { id: "s1", from: "neighbor", text: "Hei! Er det noen som vet når søppelbilen kommer denne uken?", time: "08:20" },
+    { id: "s2", from: "neighbor", text: "Søppelbilen kom forresten – bare for å si ifra 🗑️", time: "10:05" },
+  ],
 };
 
 const STORAGE_KEY = "safecircle-chats-v1";

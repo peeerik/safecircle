@@ -143,12 +143,12 @@ export default function MapPage() {
           const scaleX = 390 / (rect.width || 390);
           const scaleY = 600 / (rect.height || 600);
           const newX = Math.max(
-            -120,
-            Math.min(120, dragRef.current.panX - dx * scaleX),
+            -200,
+            Math.min(200, dragRef.current.panX - dx * scaleX),
           );
           const newY = Math.max(
-            -150,
-            Math.min(150, dragRef.current.panY - dy * scaleY),
+            -200,
+            Math.min(180, dragRef.current.panY - dy * scaleY),
           );
           setPan({ x: newX, y: newY });
         }}
