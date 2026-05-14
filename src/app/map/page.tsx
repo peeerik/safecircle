@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Target } from "lucide-react";
@@ -9,7 +9,6 @@ import { neighbors } from "@/components/safecircle/data/neighbors";
 import { FilterPills } from "@/components/safecircle/map/FilterPills";
 import { MapCanvas } from "@/components/safecircle/map/MapCanvas";
 import { NeighborDot } from "@/components/safecircle/map/NeighborDot";
-import { RadiusOverlay } from "@/components/safecircle/map/RadiusOverlay";
 import { MobileShell } from "@/components/safecircle/shell/MobileShell";
 import {
   Dialog,
@@ -52,6 +51,18 @@ const BURGLAR_Y = 380;
 const FIRE_X = 80;
 const FIRE_Y = 160; // Anne Lise H.'s position on Parkveien
 
+// Notification radius options (metres).
+const RADIUS_OPTIONS = [500, 750, 1000, 1500] as const;
+type RadiusM = (typeof RADIUS_OPTIONS)[number];
+const RADIUS_STORAGE_KEY = "safecircle:notifyRadius";
+// SVG units per metre — calibrated so 500m = 140 units (matches existing
+// RadiusOverlay sizing in this codebase).
+const SVG_PER_M = 140 / 500;
+
+// Pinch-zoom limits relative to default zoom (1x).
+const ZOOM_MIN = 0.5;
+const ZOOM_MAX = 3;
+
 export default function MapPage() {
   const router = useRouter();
   const [filter, setFilter] = useState<Filter>("alle");
@@ -71,6 +82,29 @@ export default function MapPage() {
     panY: number;
   } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  // Pinch-zoom state — applied by scaling the SVG viewBox dimensions.
+  const [zoom, setZoom] = useState(1);
+  const pinchRef = useRef<{ startDist: number; startZoom: number } | null>(
+    null,
+  );
+
+  // Notification radius (persisted to localStorage).
+  const [radius, setRadius] = useState<RadiusM>(500);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const stored = window.localStorage.getItem(RADIUS_STORAGE_KEY);
+    const parsed = Number(stored);
+    if (stored && (RADIUS_OPTIONS as readonly number[]).includes(parsed)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setRadius(parsed as RadiusM);
+    }
+  }, []);
+  const updateRadius = (next: RadiusM) => {
+    setRadius(next);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(RADIUS_STORAGE_KEY, String(next));
+    }
+  };
 
   // "betrodde" filters down to trusted neighbours only. "alle" and "online"
   // both show the full set in this demo (no online-state in mock data yet).
@@ -97,7 +131,7 @@ export default function MapPage() {
       <div className="px-5 py-3 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-white">Kart</h1>
         <span className="text-xs text-white/40 flex items-center gap-1">
-          <Target className="size-3" /> 500m
+          <Target className="size-3" /> {radius}m
         </span>
       </div>
 
@@ -161,6 +195,50 @@ export default function MapPage() {
           dragRef.current = null;
           setIsDragging(false);
         }}
+        onTouchStart={(e) => {
+          if (e.touches.length >= 2) {
+            const a = e.touches.item(0);
+            const b = e.touches.item(1);
+            if (a && b) {
+              pinchRef.current = {
+                startDist: Math.hypot(
+                  b.clientX - a.clientX,
+                  b.clientY - a.clientY,
+                ),
+                startZoom: zoom,
+              };
+              // Cancel any in-progress single-finger pan
+              dragRef.current = null;
+              setIsDragging(false);
+            }
+          }
+        }}
+        onTouchMove={(e) => {
+          if (pinchRef.current && e.touches.length >= 2) {
+            const a = e.touches.item(0);
+            const b = e.touches.item(1);
+            if (a && b && pinchRef.current.startDist > 0) {
+              const dist = Math.hypot(
+                b.clientX - a.clientX,
+                b.clientY - a.clientY,
+              );
+              const next = Math.min(
+                ZOOM_MAX,
+                Math.max(
+                  ZOOM_MIN,
+                  pinchRef.current.startZoom *
+                    (dist / pinchRef.current.startDist),
+                ),
+              );
+              setZoom(next);
+            }
+          }
+        }}
+        onTouchEnd={(e) => {
+          if (e.touches.length < 2) {
+            pinchRef.current = null;
+          }
+        }}
       >
         {/* Simulation switcher — toggles between burglary and fire scenarios */}
         <button
@@ -176,9 +254,52 @@ export default function MapPage() {
           {simulation === "calm" ? "✅" : simulation === "burglary" ? "🚨" : "🔥"}
         </button>
 
-        <MapCanvas viewBox={`${pan.x} ${pan.y} 390 600`}>
-          {/* 500m radius around user */}
-          <RadiusOverlay cx={195} cy={300} r={140} />
+        {/* Radius selector — chip control, bottom-left. Stops touch/pointer
+            propagation so picking a chip doesn't trigger a pan or pinch. */}
+        <div
+          className="absolute bottom-3 left-3 z-10 flex items-center gap-1 rounded-full bg-[var(--color-navy-card)]/90 backdrop-blur-md border border-white/10 p-1 shadow-md"
+          onPointerDown={(e) => e.stopPropagation()}
+          onPointerMove={(e) => e.stopPropagation()}
+          onPointerUp={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
+          onTouchEnd={(e) => e.stopPropagation()}
+        >
+          {RADIUS_OPTIONS.map((opt) => {
+            const active = opt === radius;
+            return (
+              <button
+                key={opt}
+                type="button"
+                onClick={() => updateRadius(opt)}
+                aria-pressed={active}
+                className={`px-2.5 py-1 text-xs font-medium rounded-full transition-colors cursor-pointer ${
+                  active
+                    ? "bg-[var(--color-gold)] text-[var(--color-navy-deep)]"
+                    : "text-white/70 hover:text-white"
+                }`}
+              >
+                {opt < 1000 ? `${opt}m` : `${opt / 1000}km`}
+              </button>
+            );
+          })}
+        </div>
+
+        <MapCanvas
+          viewBox={`${pan.x} ${pan.y} ${390 / zoom} ${600 / zoom}`}
+        >
+          {/* Notification radius around user — yellow filled circle that
+              animates smoothly when the user switches preset. */}
+          <motion.circle
+            cx={195}
+            cy={300}
+            fill="rgba(255, 200, 0, 0.15)"
+            stroke="rgba(255, 200, 0, 0.5)"
+            strokeWidth={2}
+            initial={false}
+            animate={{ r: radius * SVG_PER_M }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+          />
 
           {/* User position — green center dot */}
           <NeighborDot
